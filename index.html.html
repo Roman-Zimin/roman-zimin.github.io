@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-дизайнер · Генерация изображений</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    /* ----- СБРОС И БАЗА ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #faf9f8;
+      color: #1e1e1e;
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ----- ШАПКА ----- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e6e4e2;
+      margin-bottom: 3rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .logo span {
+      color: #a07c5c;
+    }
+    nav a {
+      margin-left: 2rem;
+      text-decoration: none;
+      color: #1e1e1e;
+      font-weight: 400;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav a:hover {
+      color: #a07c5c;
+    }
+
+    /* ----- СЕКЦИЯ "О СЕБЕ" ----- */
+    .hero {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 3rem;
+      margin-bottom: 4rem;
+      align-items: start;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 span {
+      color: #a07c5c;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: #4a4a4a;
+      max-width: 500px;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      display: inline-block;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #a07c5c;
+    }
+    .hero .badge {
+      background: #e6e4e2;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: #4a4a4a;
+    }
+
+    /* ----- НАВЫКИ ----- */
+    .skills {
+      margin-bottom: 4rem;
+    }
+    .skills h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .skills-grid span {
+      background: #fff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      border: 1px solid #e6e4e2;
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    /* ----- ПОРТФОЛИО ----- */
+    .portfolio {
+      margin-bottom: 4rem;
+    }
+    .portfolio h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.01em;
+    }
+    .portfolio-sub {
+      color: #4a4a4a;
+      margin-bottom: 2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #f0eeea;
+    }
+    .card .info {
+      padding: 1rem 1.2rem 1.4rem;
+    }
+    .card .info h3 {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .card .info p {
+      font-size: 0.85rem;
+      color: #6e6e6e;
+    }
+    .card .info .tag {
+      display: inline-block;
+      background: #f0eeea;
+      padding: 0.2rem 0.7rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      margin-top: 0.4rem;
+      color: #6e6e6e;
+    }
+
+    .placeholder-img {
+      height: 260px;
+      background: #e6e4e2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8a8a8a;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ----- РАЗДЕЛИТЕЛЬ КАТЕГОРИЙ ----- */
+    .category-label {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem 0;
+      color: #a07c5c;
+      letter-spacing: -0.01em;
+    }
+    .category-label:first-of-type {
+      margin-top: 0;
+    }
+
+    /* ----- КОНТАКТЫ ----- */
+    .contact {
+      background: #fff;
+      padding: 2.5rem 2rem;
+      border-radius: 20px;
+      border: 1px solid #e6e4e2;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .contact h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    .contact a {
+      color: #1e1e1e;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border 0.2s;
+      margin-left: 1.5rem;
+    }
+    .contact a:hover {
+      border-bottom-color: #a07c5c;
+    }
+
+    footer {
+      text-align: center;
+      color: #8a8a8a;
+      font-size: 0.85rem;
+      border-top: 1px solid #e6e4e2;
+      padding-top: 2rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 700px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      nav a {
+        margin-left: 0;
+        margin-right: 1.5rem;
+      }
+      .contact {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .contact a {
+        margin-left: 0;
+        display: inline-block;
+        margin-right: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ШАПКА -->
+    <header>
+      <div class="logo">✦ <span>Роман</span>Зимин</div>
+      <nav>
+        <a href="#portfolio">Портфолио</a>
+        <a href="#contact">Контакты</a>
+      </nav>
+    </header>
+
+    <!-- О СЕБЕ -->
+    <section class="hero">
+      <div>
+        <h1>Креатив с ИИ: <br><span>искусство, рождённое промптами</span></h1>
+        <p>Создаю концептуальные изображения, иллюстрации и визуалы с помощью передовых нейросетей (Midjourney, Stable Diffusion, Nano Banana). Превращаю идеи в уникальный визуальный контент для брендов и проектов.</p>
+        <a href="#contact" class="btn">Обсудить проект</a>
+        <div style="margin-top:1rem;">
+          <span class="badge">⚡ 100+ промптов в неделю</span>
+          <span class="badge" style="margin-left:0.5rem;">🎨 50+ проектов</span>
+          <span class="badge" style="margin-left:0.5rem;">🤖 Midjourney + Nano Banana</span>
+        </div>
+      </div>
+      <div>
+  <img src="my-photo.png" alt="Фото дизайнера" style="width:100%; border-radius:20px; display:block;">
+</div>
+    </section>
+
+    <!-- НАВЫКИ -->
+    <section class="skills">
+      <h2>Инструменты & навыки</h2>
+      <div class="skills-grid">
+        <span>Midjourney</span>
+        <span>Nano Banana Pro</span>
+        <span>Stable Diffusion</span>
+        <span>Промпт-инжиниринг</span>
+        <span>Beauty-визуализация</span>
+        <span>Fashion-генерация</span>
+        <span>Ретушь в Photoshop</span>
+        <span>Figma</span>
+        <span>Создание упаковки</span>
+        <span>AI-реклама</span>
+      </div>
+    </section>
+
+    <!-- ПОРТФОЛИО -->
+    <section class="portfolio" id="portfolio">
+      <h2>Избранные проекты</h2>
+      <p class="portfolio-sub">8 работ: косметика и летние платья</p>
+
+      <!-- КАТЕГОРИЯ: КОСМЕТИКА -->
+      <div class="category-label">💄 Beauty-реклама</div>
+      <div class="grid">
+
+        <div class="card">
+          <img src="Aurelia.jpg" alt="AURELIA" style="width:100%; display:block;">
+          <div class="info">
+            <h3>AURELIA</h3>
+            <p>Премиальный крем для лица</p>
+            <span class="tag">Nano Banana Pro</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Creme.png" alt="CREME" style="width:100%; display:block;">
+          <div class="info">
+            <h3>HydroBalance</h3>
+            <p>Увлажняющий крем с гиалуроном</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Lipstick.png" alt="LIPSTICK" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Velvet Rouge</h3>
+            <p>Матовая помада розового оттенка</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Glow.png" alt="GLOW" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Glossy Pop</h3>
+            <p>Блеск для губ с эффектом объёма</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- КАТЕГОРИЯ: ПЛАТЬЯ -->
+      <div class="category-label">👗 Летние платья</div>
+      <div class="grid">
+
+        <div class="card">
+          <img src="Dress1.png" alt="DRESS1" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Льняное платье</h3>
+            <p>Свободный крой, натуральный лён</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Dress2.png" alt="DRESS2" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Цветочный принт</h3>
+            <p>Платье-миди с ярким узором</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Dress.jpg" alt="DRESS" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Шёлковое платье</h3>
+            <p>Струящийся шёлк, пастельный оттенок</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="Dress3.png" alt="DRESS3" style="width:100%; display:block;">
+          <div class="info">
+            <h3>Платье-рубашка</h3>
+            <p>Универсальный фасон, хлопок</p>
+            <span class="tag">Midjourney</span>
+          </div>
+        </div>
+
+      </div>
+
+      <p style="margin-top:2rem; color:#6e6e6e; font-size:0.9rem;">
+        
+      </p>
+    </section>
+
+    <!-- КОНТАКТЫ -->
+    <section class="contact" id="contact">
+      <div>
+        <h2>Готовы к сотрудничеству ✨</h2>
+        <p style="color:#4a4a4a; margin-top:0.2rem;">Обсудим ваш проект</p>
+      </div>
+      <div>
+        <a href="mailto:romanzv2017@yandex.ru">Почта</a>
+        <a href="https://t.me/Roman_Rromann" target="_blank">Telegram</a>
+        <a href="https://wa.me/79272439002" target="_blank">WhatsApp</a>
+      </div>
+    </section>
+
+    <footer>
+      © 2026 Роман Зимин · AI-дизайнер
+    </footer>
+
+  </div>
+</body>
+</html>
